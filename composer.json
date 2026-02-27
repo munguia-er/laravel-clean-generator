@@ -1,19 +1,31 @@
 {
   "name": "munguia-er/laravel-clean-generator",
-  "description": "Generates Clean Architecture structure for Laravel",
+  "description": "Generates Clean Architecture structure for Laravel — DTOs, Repositories, Services, Controllers with Web & API stacks",
   "type": "library",
   "license": "MIT",
   "keywords": [
     "laravel",
     "clean-architecture",
     "code-generator",
-    "artisan"
+    "artisan",
+    "scaffold",
+    "ddd",
+    "repository-pattern",
+    "dto",
+    "api",
+    "web"
   ],
   "homepage": "https://github.com/munguia-er/laravel-clean-generator",
   "support": {
     "issues": "https://github.com/munguia-er/laravel-clean-generator/issues",
     "source": "https://github.com/munguia-er/laravel-clean-generator"
   },
+  "authors": [
+    {
+      "name": "munguia-er",
+      "homepage": "https://github.com/munguia-er"
+    }
+  ],
   "require": {
     "php": "^8.1|^8.2|^8.3",
     "illuminate/support": "^10.0|^11.0|^12.0",
@@ -41,6 +53,10 @@
         "MunguiaEr\\LaravelCleanGenerator\\CleanGeneratorServiceProvider"
       ]
     }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --testdox",
+    "test:coverage": "vendor/bin/phpunit --testdox --coverage-text"
   },
   "minimum-stability": "stable",
   "prefer-stable": true
