@@ -1,0 +1,108 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ serviceInterfaceName }};
+use {{ createDtoName }};
+use {{ updateDtoName }};
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+
+class {{ class }} extends Controller
+{
+    public function __construct(
+        protected {{ serviceInterfaceClass }} $service
+    ) {}
+
+    public function index()
+    {
+        $this->service->paginate(); // @todo use result as needed
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - index</title></head>
+    <body><h1>index method called</h1></body>
+</html>
+');
+    }
+
+    public function create()
+    {
+        $this->service->paginate(); // @todo use result as needed
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - create</title></head>
+    <body><h1>create method called</h1></body>
+</html>
+');
+    }
+
+    public function store(Request $request)
+    {
+        $dto = new {{ createDtoClass }}(
+            // @todo map $request fields into DTO
+        );
+
+        $this->service->create($dto);
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - store</title></head>
+    <body><h1>store method called</h1></body>
+</html>
+');
+    }
+
+    public function show($id)
+    {
+        $this->service->find($id); // @todo use result as needed
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - show</title></head>
+    <body><h1>show method called</h1></body>
+</html>
+');
+    }
+
+    public function edit($id)
+    {
+        $this->service->find($id); // @todo use result as needed
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - edit</title></head>
+    <body><h1>edit method called</h1></body>
+</html>
+');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $dto = new {{ updateDtoClass }}(
+            // @todo map $request fields into DTO
+        );
+
+        $this->service->update($id, $dto);
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - update</title></head>
+    <body><h1>update method called</h1></body>
+</html>
+');
+    }
+
+    public function destroy($id)
+    {
+        $this->service->delete($id);
+
+        return response('
+<html>
+    <head><title>{{ modelName }} - destroy</title></head>
+    <body><h1>destroy method called</h1></body>
+</html>
+');
+    }
+}

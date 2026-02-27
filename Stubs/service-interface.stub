@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ createDtoInterface }};
+use {{ updateDtoInterface }};
+
+interface {{ class }}
+{
+    public function paginate(int $perPage = 15);
+    public function find($id);
+    public function create({{ createDtoClass }} $data);
+    public function update($id, {{ updateDtoClass }} $data);
+    public function delete($id);
+}

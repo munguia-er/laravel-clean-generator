@@ -1,0 +1,40 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ interfaceName }};
+use {{ repositoryInterfaceName }};
+use {{ createDtoInterface }};
+use {{ updateDtoInterface }};
+
+class {{ class }} implements {{ interfaceClass }}
+{
+    public function __construct(
+        protected {{ repositoryInterfaceClass }} $repository
+    ) {}
+
+    public function paginate(int $perPage = 15)
+    {
+        return $this->repository->paginate($perPage);
+    }
+
+    public function find($id)
+    {
+        return $this->repository->find($id);
+    }
+
+    public function create({{ createDtoClass }} $data)
+    {
+        return $this->repository->create($data->toArray());
+    }
+
+    public function update($id, {{ updateDtoClass }} $data)
+    {
+        return $this->repository->update($id, $data->toArray());
+    }
+
+    public function delete($id)
+    {
+        return $this->repository->delete($id);
+    }
+}
