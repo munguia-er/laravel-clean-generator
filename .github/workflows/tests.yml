@@ -38,13 +38,15 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" --no-update --no-interaction
       
           if [[ "${{ matrix.laravel }}" == "10.*" ]]; then
-            composer require "orchestra/testbench:^8.0" --dev --no-update --no-interaction
+            composer require "laravel/framework:^10.40" --no-update --no-interaction
+            composer require "orchestra/testbench:^8.37" --dev --no-update --no-interaction
           fi
-      
+          
           if [[ "${{ matrix.laravel }}" == "11.*" ]]; then
+            composer require "laravel/framework:^11.0" --no-update --no-interaction
             composer require "orchestra/testbench:^9.0" --dev --no-update --no-interaction
           fi
-      
+          
           composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
