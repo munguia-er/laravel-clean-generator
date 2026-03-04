@@ -10,6 +10,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ---
 
+## [1.1.0] - 2026-03-04
+
+### Added
+
+- **Explicit Primary Key Generation** — `ModelGenerator` now includes explicite `$primaryKey`, `$incrementing`, and `$keyType` properties based on table schema. Primary keys are correctly excluded from `$fillable`.
+- **Automatic Service Registration** — `GenerateCleanCrudCommand` and `ProviderModifier` now automatically register both Repository and Service interfaces/implementations within `AppServiceProvider`.
+- **Conditional Form Requests** — Introduced `RequestGenerator` to automatically build `Store{Model}Request` and `Update{Model}Request` classes. Enabled via `clean-generator.generate.requests` config.
+- **Smart Validation Rules** — Form Request generator maps database column types, lengths, nullability, enums, foreign keys, and unique constraints directly into Laravel array validation rules.
+- Controller generator conditionally type-hints custom Form Requests instead of base `Request` when enabled.
+
+---
+
 ## [1.0.0] — 2026-02-27
 
 ### Added
