@@ -13,13 +13,15 @@ A Laravel Artisan package that scaffolds a **Clean Architecture** (or Simple App
 
 - 🏗 **Dual architecture support** — `clean` (Domain/Application/Infrastructure layers) or `simple` (flat App-based)
 - 🌐 **Web & API controllers** — configurable default stack, HTML or JSON responses
+- 🛡 **Smart Form Requests** — auto-generates `StoreRequest` and `UpdateRequest` with schema-mapped validation arrays (unique rules, foreign keys, limits, enums)
 - 🗂 **Module sub-paths** — `Blog/Post` generates `App/DTOs/Blog/PostData.php`, not `App/Blog/Post/DTOs`
+- 🎯 **Explicit Primary Keys** — extracts primary key type and auto-increment status dynamically from the database
 - 🔐 **Strict validation** — stops early if the model is missing and `--table` is not provided
 - 🔄 **Model preservation** — never moves or overwrites an existing model
-- 📦 **Auto-binding** — registers Repository → Implementation in `AppServiceProvider`
+- 📦 **Auto-binding** — automatically registers Repository and Service bindings in `AppServiceProvider`
 - 🛣 **Auto-routing** — injects `Route::resource()` or `Route::apiResource()` into the correct route file
 - 🧬 **Schema introspection** — detects SoftDeletes, primary keys, nullable columns, casts
-- ✅ **Full test coverage** — 33 tests, 162 assertions
+- ✅ **Full test coverage** — runs against Orchestra Testbench
 
 ---
 
@@ -85,6 +87,7 @@ return [
         'simple' => [
             'models'                 => 'Models',
             'dtos'                   => 'DTOs',
+            'requests'               => 'Http/Requests',
             'repository_interfaces'  => 'Interfaces/Repositories',
             'repositories'           => 'Repositories',
             'service_interfaces'     => 'Interfaces/Services',
@@ -94,6 +97,7 @@ return [
         'clean' => [
             'models'                 => 'Models',
             'dtos'                   => 'Domain/DTOs',
+            'requests'               => 'Application/Http/Requests',
             'repository_interfaces'  => 'Domain/Contracts',
             'repositories'           => 'Infrastructure/Repositories',
             'service_interfaces'     => 'Domain/Services',
@@ -160,12 +164,16 @@ app/
 │   ├── PostData.php
 │   ├── CreatePostData.php
 │   └── UpdatePostData.php
+├── Http/
+│   ├── Requests/Blog/
+│   │   ├── StorePostRequest.php
+│   │   └── UpdatePostRequest.php
+│   └── Controllers/Blog/PostController.php
 ├── Interfaces/
 │   ├── Repositories/Blog/PostRepositoryInterface.php
 │   └── Services/Blog/PostServiceInterface.php
 ├── Repositories/Blog/EloquentPostRepository.php
-├── Services/Blog/PostService.php
-└── Http/Controllers/Blog/PostController.php
+└── Services/Blog/PostService.php
 ```
 
 ### Clean architecture — `php artisan clean:generate Blog/Post --table=posts --api`
@@ -183,7 +191,11 @@ app/
 │       ├── PostServiceInterface.php
 │       └── PostService.php
 ├── Infrastructure/Repositories/Api/Blog/EloquentPostRepository.php
-└── Application/Http/Controllers/Api/Blog/ApiPostController.php
+└── Application/Http/
+    ├── Requests/Api/Blog/
+    │   ├── StorePostRequest.php
+    │   └── UpdatePostRequest.php
+    └── Controllers/Api/Blog/ApiPostController.php
 ```
 
 ---
@@ -196,6 +208,7 @@ app/
 | ------------------------------ | ----------------------------------------------------- |
 | **Models**                     | Eloquent ORM models, SoftDeletes, casts               |
 | **DTOs**                       | Typed, readonly value objects for data transfer       |
+| **Form Requests**              | HTTP request validation logic and data authorization  |
 | **Repository Interfaces**      | Persistence contract (domain layer)                   |
 | **Repository Implementations** | Eloquent concrete implementations                     |
 | **Service Interfaces**         | Business logic contract                               |
