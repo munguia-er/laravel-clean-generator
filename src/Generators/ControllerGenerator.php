@@ -20,7 +20,7 @@ class ControllerGenerator extends AbstractGenerator
      * @param  bool   $force   Overwrite existing file
      * @return string          Fully-qualified class name of the generated controller
      */
-    public function generateController(string $input, bool $isApi, bool $force = false): string
+    public function generateController(string $input, bool $isApi, bool $force = false, array $requestClasses = []): string
     {
         $modelName = class_basename(str_replace('/', '\\', $input));
 
@@ -45,6 +45,22 @@ class ControllerGenerator extends AbstractGenerator
             // Select the correct stub
             $stubName = $isApi ? 'controller-api' : 'controller-web';
 
+            $storeRequestImport = 'use Illuminate\Http\Request;';
+            $updateRequestImport = '';
+            $storeRequestClass = 'Request';
+            $updateRequestClass = 'Request';
+
+            if (!empty($requestClasses)) {
+                $storeParts = explode('\\', $requestClasses['store']);
+                $updateParts = explode('\\', $requestClasses['update']);
+                
+                $storeRequestImport = "use {$requestClasses['store']};";
+                $updateRequestImport = "use {$requestClasses['update']};";
+                
+                $storeRequestClass = end($storeParts);
+                $updateRequestClass = end($updateParts);
+            }
+
             $stub = $this->getStub($stubName);
             $stub = str_replace('{{ namespace }}',             $controllerNamespace,                                               $stub);
             $stub = str_replace('{{ class }}',                 $controllerName,                                                    $stub);
@@ -55,6 +71,11 @@ class ControllerGenerator extends AbstractGenerator
             $stub = str_replace('{{ updateDtoName }}',         $dtoNamespace . '\\Update' . $modelName . 'Data',                  $stub);
             $stub = str_replace('{{ createDtoClass }}',        'Create' . $modelName . 'Data',                                    $stub);
             $stub = str_replace('{{ updateDtoClass }}',        'Update' . $modelName . 'Data',                                    $stub);
+            
+            // Conditional Form Request Replacements
+            $stub = str_replace('use Illuminate\Http\Request;', $updateRequestImport ? $storeRequestImport . "\nuse " . $requestClasses['update'] . ";" : $storeRequestImport, $stub);
+            $stub = str_replace('store(Request $request)', "store({$storeRequestClass} \$request)", $stub);
+            $stub = str_replace('update(Request $request, $id)', "update({$updateRequestClass} \$request, \$id)", $stub);
 
             file_put_contents($controllerPath, $stub);
         }

@@ -151,23 +151,42 @@ class GenerateCleanCrudCommand extends Command
                 return true;
             });
 
+            // ── Step 5.5: Form Requests ───────────────────────────────────────
+            $requestClasses = [];
+            if (config('clean-generator.generate.requests', false)) {
+                $this->components->task('Generating Form Requests', function () use (&$requestClasses, $introspector, $effectiveInput, $tableName, $force) {
+                    $requestClasses = (new \MunguiaEr\LaravelCleanGenerator\Generators\RequestGenerator($introspector))->generate($effectiveInput, $tableName, $force);
+                    return true;
+                });
+            }
+
             // ── Step 6: Controller ────────────────────────────────────────────
             $controllerFqcn = null;
-            $this->components->task('Generating Controller', function () use (&$controllerFqcn, $introspector, $effectiveInput, $isApi, $force) {
-                $controllerFqcn = (new ControllerGenerator($introspector))->generateController($effectiveInput, $isApi, $force);
+            $this->components->task('Generating Controller', function () use (&$controllerFqcn, $introspector, $effectiveInput, $isApi, $force, $requestClasses) {
+                $controllerFqcn = (new ControllerGenerator($introspector))->generateController($effectiveInput, $isApi, $force, $requestClasses);
                 return true;
             });
 
             // ── Step 7: Register provider binding ─────────────────────────────
             if (config('clean-generator.auto_register.bindings', true)) {
-                $this->components->task('Registering Bindings', function () use ($repoClasses) {
+                $this->components->task('Registering Bindings', function () use ($repoClasses, $serviceClasses) {
                     $providerPath = app_path('Providers/AppServiceProvider.php');
                     if (file_exists($providerPath)) {
-                        (new ProviderModifier())->addBinding(
-                            $providerPath,
-                            $repoClasses['interface'],
-                            $repoClasses['implementation']
-                        );
+                        $modifier = new ProviderModifier();
+                        if (!empty($repoClasses)) {
+                            $modifier->addBinding(
+                                $providerPath,
+                                $repoClasses['interface'],
+                                $repoClasses['implementation']
+                            );
+                        }
+                        if (!empty($serviceClasses)) {
+                            $modifier->addBinding(
+                                $providerPath,
+                                $serviceClasses['interface'],
+                                $serviceClasses['implementation']
+                            );
+                        }
                     }
                     return true;
                 });

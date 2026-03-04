@@ -34,7 +34,7 @@ class DtoGenerator extends AbstractGenerator
             return;
         }
 
-        $properties = $this->buildPropertiesString($tableInfo['columns'], true, $tableInfo['primary_key']);
+        $properties = $this->buildPropertiesString($tableInfo['columns'], true, $tableInfo['primary_key']['name']);
 
         $stub = $this->getStub('dto');
         $stub = str_replace('{{ namespace }}', $namespace, $stub);

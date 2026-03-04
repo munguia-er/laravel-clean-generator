@@ -45,7 +45,10 @@ class ModelGeneratorTest extends TestCase
         $this->assertStringContainsString("'title',", $content);
         $this->assertStringContainsString("'content',", $content);
         $this->assertStringContainsString("'is_published'", $content);
-        $this->assertStringNotContainsString("'id'", $content);
+        $this->assertStringContainsString("protected \$primaryKey = 'id';", $content);
+        
+        // Assert id is not in fillable
+        $this->assertDoesNotMatchRegularExpression("/protected \\\$fillable = \\[[^\\]]*'id'[^\\]]*\\];/", $content);
         $this->assertStringNotContainsString("'deleted_at'", $content);
 
         // Assert SoftDeletes

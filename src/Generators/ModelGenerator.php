@@ -21,6 +21,23 @@ class ModelGenerator extends AbstractGenerator
         if (!file_exists($modelPath) || $force) {
             $tableInfo = $this->introspector->getTableInfo($tableName);
 
+            $pkMeta = $tableInfo['primary_key'];
+            $pkName = $pkMeta['name'];
+            $pkType = $pkMeta['type'] === 'int' ? 'int' : 'string';
+            $pkIncrementing = $pkMeta['auto_increment'];
+
+            $primaryKeyBlock = [];
+            $primaryKeyBlock[] = "    protected \$primaryKey = '{$pkName}';";
+            
+            if (!$pkIncrementing) {
+                $primaryKeyBlock[] = "    public \$incrementing = false;";
+            }
+            
+            if ($pkType !== 'int') {
+                $primaryKeyBlock[] = "    protected \$keyType = '{$pkType}';";
+            }
+            $primaryKeyStr = implode("\n", $primaryKeyBlock);
+
             $fillable = $this->buildFillableArray($tableInfo['columns']);
             $castsBlock = $this->buildCastsBlock($tableInfo['columns']);
 
@@ -38,6 +55,7 @@ class ModelGenerator extends AbstractGenerator
             $stub = str_replace('{{ softDeletesImport }}', $softDeletesImport, $stub);
             $stub = str_replace('{{ additionalTraits }}', $additionalTraits, $stub);
             $stub = str_replace('{{ table }}', $tableName, $stub);
+            $stub = str_replace('{{ primaryKeyBlock }}', $primaryKeyStr, $stub);
             $stub = str_replace('{{ fillable }}', $fillable, $stub);
             $stub = str_replace('{{ casts }}', $castsBlock, $stub);
 
@@ -51,10 +69,6 @@ class ModelGenerator extends AbstractGenerator
     {
         $fillable = [];
         foreach ($columns as $column) {
-            // Usually we don't put AI primary keys or timestamps in fillable directly
-            if ($column['name'] === 'id' || in_array($column['name'], ['created_at', 'updated_at', 'deleted_at'])) {
-                continue;
-            }
             $fillable[] = "'" . $column['name'] . "'";
         }
 
